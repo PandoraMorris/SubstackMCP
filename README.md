@@ -34,9 +34,19 @@ When it finishes, quit Claude with **Cmd + Q**, reopen it, and ask: *List my Sub
 
 Keep the `substack-mcp` folder where it is, because Claude runs it from there.
 
-## Get your Substack key
+## Your Substack key
 
-Your key is what lets this act as you. **Treat it like a password.** Never send it to anyone, paste it into a chat, or share a screenshot of the panel below. This works in Chrome and Edge.
+Your key is what lets this act as you. **Treat it like a password.** Never send it to anyone, paste it into a chat, or share a screenshot of it. It stays in your Mac's Keychain and never leaves your computer.
+
+**The easy way (what the installer offers first):** it opens a browser window, you sign in to Substack yourself, and it reads your key from that window and saves it. No copying. You can also run it any time with:
+
+```bash
+npm run grab
+```
+
+The first run downloads a browser (one-off, a couple of minutes). It only ever sees the account you personally sign into.
+
+**The manual way (if you'd rather not, or the browser step won't run):** copy the key from your browser's developer tools. This works in Chrome and Edge.
 
 1. Sign in to Substack and go to `https://YOURNAME.substack.com/publish/posts`.
 2. In the menu bar, choose **View > Developer > Developer Tools**.
@@ -53,7 +63,7 @@ Paste the key only when the installer asks for it. If you paste it at a normal T
 
 ## If it stops working
 
-- **Drafts stop working or Substack refuses:** you've probably been signed out, so your key has expired. Get a new key, then run `./install.sh` in the `substack-mcp` folder.
+- **Drafts stop working or Substack refuses:** you've probably been signed out, so your key has expired. Run `./install.sh` again (or `npm run grab`) and sign in afresh.
 - **Claude can't see Substack:** quit with **Cmd + Q** and reopen it. Your Mac needs to be on, because this runs on your computer.
 - **"Too many requests":** wait and try again later.
 

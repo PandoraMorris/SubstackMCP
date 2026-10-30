@@ -41,20 +41,36 @@ PY
 
 echo
 echo "3 of 4: Your Substack key"
-if security find-generic-password -s "$KEYCHAIN_SERVICE" -a "$KEYCHAIN_ACCOUNT" >/dev/null 2>&1; then
-  echo "A key is already saved. Paste a new one to replace it, or just press Enter to keep it."
-else
-  echo "Follow 'Get your Substack key' in README.md, then paste the key here."
+have_key() { security find-generic-password -s "$KEYCHAIN_SERVICE" -a "$KEYCHAIN_ACCOUNT" >/dev/null 2>&1; }
+
+grabbed=""
+if have_key; then
+  echo "A key is already saved. Press Enter to keep it, or type new to replace it."
+  read -r -p "> " choice
+  [ "$choice" = "new" ] || grabbed="keep"
 fi
-echo "Nothing appears as you paste. That's normal, and it keeps the key private."
-read -r -s -p "Key: " key
-echo
-if [ -n "$key" ]; then
-  key="${key#connect.sid=}"
-  key="${key#substack.sid=}"
-  case "$key" in *[[:space:]]*) die "that isn't the key, because it has spaces in it. Nothing was saved." ;; esac
-  security add-generic-password -U -s "$KEYCHAIN_SERVICE" -a "$KEYCHAIN_ACCOUNT" -w "$key"
-  unset key
+
+if [ -z "$grabbed" ]; then
+  echo "I can open a browser so you can sign in to Substack and grab your key automatically."
+  read -r -p "Open the browser now? [Y/n] " auto
+  case "$auto" in
+    [Nn]*)
+      echo "Fine. Follow 'Get your Substack key' in README.md, then paste it here."
+      echo "Nothing appears as you paste. That's normal, and it keeps the key private."
+      read -r -s -p "Key: " key
+      echo
+      if [ -n "$key" ]; then
+        key="${key#connect.sid=}"; key="${key#substack.sid=}"
+        case "$key" in *[[:space:]]*) die "that isn't the key, because it has spaces in it. Nothing was saved." ;; esac
+        security add-generic-password -U -s "$KEYCHAIN_SERVICE" -a "$KEYCHAIN_ACCOUNT" -w "$key"
+        unset key
+      fi
+      ;;
+    *)
+      command -v npx >/dev/null && npx --yes playwright install chromium >/dev/null 2>&1 || true
+      node scripts/grab-key.mjs >/dev/null || die "didn't capture your key. Run ./install.sh again, or paste it by hand (README.md)."
+      ;;
+  esac
 fi
 
 result=$(printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"list_drafts","arguments":{"limit":1}}}' \
