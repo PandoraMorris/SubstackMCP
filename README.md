@@ -23,7 +23,7 @@ You need:
 Open Terminal, paste these three lines, and press Enter. If your Mac offers to install developer tools, accept, then run them again.
 
 ```bash
-git clone https://github.com/Philm-moxywolf/substack-mcp.git ~/substack-mcp
+git clone https://github.com/Philm-moxywolf/Substack-MCP.git ~/substack-mcp
 cd ~/substack-mcp
 ./install.sh
 ```
