@@ -1,40 +1,22 @@
-# Substack Key Grabber (browser extension)
+# Substack Key Grabber (browser add-on)
 
-One-click way to save your Substack key, with no DevTools and nothing to copy.
+Hands your Substack key to the substack-mcp setup on your Mac in one click. No Developer Tools, nothing to copy.
 
-Your Substack sign-in is held in your browser's memory, so files on disk can't read it. A browser
-extension can — through the official cookies API — so this reads it and hands it to the setup running
-on your Mac, which saves it to Keychain. The key never leaves your machine.
+Works in **Google Chrome** and **Microsoft Edge**. The step-by-step install is **Part 4 of the main [README](../README.md)**.
 
-Works in **Microsoft Edge** and **Google Chrome**.
+## Why it exists
 
-## Install it (once)
+Claude needs the key that proves to Substack it's you. Substack keeps that key (the `substack.sid` cookie) in your browser's memory, locked away from web pages and not saved in any file on disk. A browser add-on is allowed to read it through the browser's official cookies API, so this one does exactly that, only when you click.
 
-1. Open your browser and go to the extensions page:
-   - Edge: type `edge://extensions` in the address bar and press Enter.
-   - Chrome: type `chrome://extensions` and press Enter.
-2. Turn on **Developer mode** (a switch, top-right in Chrome, left side in Edge).
-3. Click **Load unpacked**.
-4. Choose this `extension` folder (inside the `substack-mcp` folder).
-5. The "Substack Key Grabber" appears in your list. Pin it if you like (puzzle-piece icon in the toolbar).
+## What happens when you click
 
-## Use it (each time your key expires)
+1. The add-on reads your Substack sign-in key from this browser.
+2. It sends it to `127.0.0.1:8789`, which is your own Mac, where the setup is waiting (`./install.sh`, or `npm run grab:ext`).
+3. The setup checks with Substack that the key really is a signed-in session, then saves it to your Mac's Keychain.
 
-1. Make sure you're signed in to Substack in this browser.
-2. In Terminal, in the `substack-mcp` folder, run:
+## Is it safe?
 
-   ```bash
-   npm run grab:ext
-   ```
-
-   It prints **Ready. Now click the Substack Key Grabber button in your browser.**
-3. Click the extension's icon, then **Grab my Substack key**.
-4. The popup says **Saved!** and Terminal says **Got it. Your key is saved to Keychain.**
-
-That's it. You only sign in to Substack the normal way, in your normal browser — the extension does the rest.
-
-## Is this safe?
-
-- The extension only reads Substack cookies, and only sends them to `127.0.0.1` (your own Mac).
-- The listener saves a key **only if** it's a real, signed-in Substack session, so nothing else can slip a bad key in.
-- Nothing is sent to the internet, and the listener closes as soon as it has your key.
+- It only reads Substack cookies, and it only sends them to your own Mac. Nothing goes to the internet except Substack itself.
+- It does nothing until you click its button.
+- The setup saves a key **only if** Substack confirms it's a real signed-in session, so nothing else can slip a bad key in. It stops listening as soon as it has your key, or after 5 minutes.
+- The code is three short files in this folder: `manifest.json`, `popup.html` and `popup.js`. Anyone technical can read them in a couple of minutes.

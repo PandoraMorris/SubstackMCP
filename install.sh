@@ -17,8 +17,10 @@ command -v node >/dev/null || die "Node.js is missing. Install the LTS version f
 command -v python3 >/dev/null || die "Python 3 is missing. Run: xcode-select --install"
 
 echo "1 of 4: Building..."
-npm install --silent --no-fund --no-audit
-npm run --silent build >/dev/null
+npm install --silent --no-fund --no-audit >/dev/null 2>&1 \
+  || die "couldn't download what it needs. Check your internet connection, then run this again."
+npm run --silent build >/dev/null 2>&1 \
+  || die "the build failed. Run this again. If it keeps failing, send a screenshot of this window to whoever shared this guide."
 
 echo
 echo "2 of 4: Your Substack"
@@ -51,19 +53,16 @@ if have_key; then
 fi
 
 if [ -z "$grabbed" ]; then
-  echo "The easiest way to get your key is the one-click browser add-on."
-  echo "If you haven't loaded it yet, open extension/README.md and do that first (takes a minute)."
+  echo "Get your key with the Substack Key Grabber add-on (Part 4 of the guide)."
   read -r -p "Use the browser add-on? [Y/n] " useext
   case "$useext" in
     [Nn]*)
       echo "OK, I'll open a sign-in window instead. (This way needs a Substack password.)"
       command -v npx >/dev/null && npx --yes playwright install chromium >/dev/null 2>&1 || true
-      node scripts/grab-key.mjs >/dev/null || die "didn't capture your key. Try the add-on instead (extension/README.md), then run ./install.sh again."
+      node scripts/grab-key.mjs >/dev/null || die "didn't capture your key. Use the add-on instead (Part 4 of the guide), then run ./install.sh again."
       ;;
     *)
-      echo "Make sure the add-on is loaded and you're signed in to Substack in that browser."
-      echo "When it says Ready, click the add-on's button: Grab my Substack key."
-      node scripts/receive-key.mjs >/dev/null || die "didn't get your key. See extension/README.md, then run ./install.sh again."
+      node scripts/receive-key.mjs >/dev/null || die "didn't get your key. Check the add-on is loaded and you're signed in to Substack (Part 4 of the guide), then run ./install.sh again."
       ;;
   esac
 fi
@@ -81,13 +80,18 @@ else
   python3 - "$(command -v node)" "$SERVER" <<'PY'
 import json, os, shutil, sys, tempfile
 
-entry = {"type": "stdio", "command": sys.argv[1], "args": [sys.argv[2]], "env": {}}
-targets = ["~/.claude.json", "~/Library/Application Support/Claude/claude_desktop_config.json"]
+entry = {"command": sys.argv[1], "args": [sys.argv[2]], "env": {}}
+desktop = os.path.expanduser("~/Library/Application Support/Claude/claude_desktop_config.json")
+targets = [os.path.expanduser("~/.claude.json"), desktop]
 connected = 0
-for target in targets:
-    path = os.path.expanduser(target)
+for path in targets:
     if not os.path.exists(path):
-        continue
+        # The desktop app may be installed but not have a settings file yet; start one for it.
+        if path == desktop and os.path.isdir(os.path.dirname(path)):
+            with open(path, "w") as f:
+                f.write("{}")
+        else:
+            continue
     with open(path) as f:
         config = json.load(f)
     shutil.copy2(path, path + ".bak-substack")
@@ -98,7 +102,7 @@ for target in targets:
     os.replace(f.name, path)
     connected += 1
 if not connected:
-    sys.exit("Claude isn't installed yet. Install it, open it once, then run this again.")
+    sys.exit("The Claude app isn't installed yet. Install it from claude.ai/download, open it once, then run this again.")
 PY
   echo "Connected."
 fi

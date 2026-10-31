@@ -7,8 +7,8 @@
     "build": "esbuild src/stdio.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/substack-mcp.mjs",
     "typecheck": "tsc --noEmit",
     "grab": "node scripts/grab-key.mjs",
-    "grab:edge": "node scripts/grab-key-edge.mjs",
-    "grab:ext": "node scripts/receive-key.mjs"
+    "grab:ext": "node scripts/receive-key.mjs",
+    "paste-key": "bash scripts/paste-key.sh"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
