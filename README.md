@@ -108,18 +108,17 @@ You'll know it worked when Terminal shows a few lines that say **Cloning into** 
 
 ### Step 3 of 4: Your Substack key
 
-6. Terminal says **Open the browser now? [Y/n]**.
-7. Press **Enter**.
-8. Wait. **The first time, this can take a few minutes**, because it downloads a browser. Leave it alone until a new browser window opens.
-9. The window may say it is **"being controlled by automated test software"**. That's normal. It's the window this setup opened.
-10. **In that new window**, sign in to Substack with your email and password.
+Most Substack accounts have no password — you sign in with a link they email you — so the reliable way to hand your key to this setup is a small, one-click browser add-on. It reads your key safely and sends it straight to this setup on your Mac. **Full steps are in [extension/README.md](extension/README.md).** In short:
 
-    **Important:** If Substack emails you a sign-in link instead, don't click the link in your email. In your email, right-click the link and choose **Copy Link**, then click the address bar at the top of the new window, press **Cmd + V**, and press **Enter**. Signing in anywhere else won't work.
+6. **Load the add-on once** (do this now, in another window). In Edge or Chrome, open `edge://extensions` (or `chrome://extensions`), turn on **Developer mode**, click **Load unpacked**, and choose the **extension** folder inside this project. Then make sure you're signed in to Substack in that same browser.
+7. Back in Terminal, when it asks **Use the browser add-on? [Y/n]**, press **Enter**.
+8. Terminal says **Ready. Now click the Substack Key Grabber button in your browser.**
+9. Click the add-on's icon in the toolbar, then **Grab my Substack key**.
+10. The add-on says **Saved!** and Terminal says **Substack accepted your key.**
 
-11. When you see your Substack page and you're signed in, go back to Terminal. The window closes on its own.
-12. Terminal says **Substack accepted your key.**
+You have 5 minutes to click. If you take longer, just start Part 4 again.
 
-You have 5 minutes to sign in. If you take longer, just start Part 4 again.
+*Have a Substack password and would rather not use the add-on? Answer **n** at step 7 and a sign-in window opens instead.*
 
 ### Step 4 of 4: Connecting to Claude
 
@@ -163,8 +162,11 @@ Something got skipped or mistyped. Copy and paste each line again rather than ty
 **Terminal says "couldn't find a Substack"**
 Your Substack name was typed wrong. Run Part 4 again and check the name.
 
-**The browser window never opened, or it said "didn't capture your key"**
-Run Part 4 again. If it still fails, use **Get your key by hand** below.
+**The add-on says "Couldn't find your Substack sign-in key"**
+Make sure you're signed in to Substack in that same browser, then click again. If you just signed in, reload the Substack page first.
+
+**The add-on says "Couldn't reach the setup on your Mac"**
+The listener isn't running. In Terminal, run `npm run grab:ext` (or start Part 4 again), wait for **Ready**, then click the add-on.
 
 **Terminal says "Substack refused"**
 You may have signed in to a different Substack account than the name you typed. Run Part 4 again and check both.

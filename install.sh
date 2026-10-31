@@ -51,24 +51,19 @@ if have_key; then
 fi
 
 if [ -z "$grabbed" ]; then
-  echo "I can open a browser so you can sign in to Substack and grab your key automatically."
-  read -r -p "Open the browser now? [Y/n] " auto
-  case "$auto" in
+  echo "The easiest way to get your key is the one-click browser add-on."
+  echo "If you haven't loaded it yet, open extension/README.md and do that first (takes a minute)."
+  read -r -p "Use the browser add-on? [Y/n] " useext
+  case "$useext" in
     [Nn]*)
-      echo "Fine. Follow 'Get your key by hand' in README.md, then paste it here."
-      echo "Nothing appears as you paste. That's normal, and it keeps the key private."
-      read -r -s -p "Key: " key
-      echo
-      if [ -n "$key" ]; then
-        key="${key#connect.sid=}"; key="${key#substack.sid=}"
-        case "$key" in *[[:space:]]*) die "that isn't the key, because it has spaces in it. Nothing was saved." ;; esac
-        security add-generic-password -U -s "$KEYCHAIN_SERVICE" -a "$KEYCHAIN_ACCOUNT" -w "$key"
-        unset key
-      fi
+      echo "OK, I'll open a sign-in window instead. (This way needs a Substack password.)"
+      command -v npx >/dev/null && npx --yes playwright install chromium >/dev/null 2>&1 || true
+      node scripts/grab-key.mjs >/dev/null || die "didn't capture your key. Try the add-on instead (extension/README.md), then run ./install.sh again."
       ;;
     *)
-      command -v npx >/dev/null && npx --yes playwright install chromium >/dev/null 2>&1 || true
-      node scripts/grab-key.mjs >/dev/null || die "didn't capture your key. Run ./install.sh again, or paste it by hand (README.md)."
+      echo "Make sure the add-on is loaded and you're signed in to Substack in that browser."
+      echo "When it says Ready, click the add-on's button: Grab my Substack key."
+      node scripts/receive-key.mjs >/dev/null || die "didn't get your key. See extension/README.md, then run ./install.sh again."
       ;;
   esac
 fi

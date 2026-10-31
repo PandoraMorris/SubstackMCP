@@ -26,8 +26,8 @@ async function launchBrowser() {
     log("Playwright isn't installed. Run:  npm install  then try again.");
     process.exit(1);
   }
-  // Prefer the Chrome the user already has; fall back to Playwright's own browser.
-  for (const opts of [{ channel: "chrome" }, {}]) {
+  // Use a browser the user already has (Chrome, then Edge); fall back to Playwright's own.
+  for (const opts of [{ channel: "chrome" }, { channel: "msedge" }, {}]) {
     try {
       return await chromium.launch({ headless: false, ...opts });
     } catch {
