@@ -55,7 +55,7 @@ if [ -z "$grabbed" ]; then
   read -r -p "Open the browser now? [Y/n] " auto
   case "$auto" in
     [Nn]*)
-      echo "Fine. Follow 'Get your Substack key' in README.md, then paste it here."
+      echo "Fine. Follow 'Get your key by hand' in README.md, then paste it here."
       echo "Nothing appears as you paste. That's normal, and it keeps the key private."
       read -r -s -p "Key: " key
       echo
@@ -75,7 +75,7 @@ fi
 
 result=$(printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"list_drafts","arguments":{"limit":1}}}' \
   | node "$SERVER" | python3 -c 'import json,sys; print("ERROR" if json.loads(sys.stdin.readline())["result"].get("isError") else "OK")')
-[ "$result" = "OK" ] || die "Substack refused. Check the name '$publication' is your own Substack, then copy your key again from the Network tab, following README.md, and run this again."
+[ "$result" = "OK" ] || die "Substack refused. Check the name '$publication' is your own Substack, then run this again and sign in to that same account."
 echo "Substack accepted your key."
 
 echo
